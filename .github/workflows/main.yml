@@ -1,0 +1,33 @@
+name: Daily Crab Price Update
+
+on:
+  schedule:
+    # This tells the robot to wake up at 8:00 AM every day
+    - cron: '0 8 * * *'
+  workflow_dispatch: # This lets you start it manually with a button
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Tools
+        run: pip install -r requirements.txt
+
+      - name: Run the Bot
+        run: python crab_bot.py
+
+      - name: Save the Data
+        run: |
+          git config --global user.name 'CrabBot'
+          git config --global user.email 'bot@github.com'
+          git add prices.csv crab_chart.png
+          git commit -m "Updated crab prices"
+          git push
